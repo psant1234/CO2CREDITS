@@ -1,103 +1,227 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Carbon Trading Login</title>
+  <title>MIT Carbon Trading Game</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    body { font-family: Arial; background: #f5f5f5; padding: 20px; }
-    .container { max-width: 500px; margin: auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-    h2 { color: #8A1538; text-align: center; }
-    label { display: block; margin-top: 15px; }
-    input, select { width: 100%; padding: 8px; margin-top: 5px; }
-    button { margin-top: 20px; padding: 10px; width: 100%; background-color: #8A1538; color: white; border: none; border-radius: 4px; cursor: pointer; }
-    .hidden { display: none; }
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background-color: #f5f5f5;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 40px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    h2 {
+      color: #8A1538;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    label {
+      margin-top: 10px;
+      display: block;
+    }
+    input[type="text"], input[type="password"], input[type="number"], select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background-color: #8A1538;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      margin-top: 15px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    nav {
+      display: flex;
+      justify-content: center;
+      background-color: #8A1538;
+      margin-top: 20px;
+    }
+    nav button {
+      background: none;
+      color: white;
+      border: none;
+      padding: 14px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    nav button.active {
+      background-color: white;
+      color: #8A1538;
+      font-weight: bold;
+    }
+    .tab-content { display: none; margin-top: 20px; }
+    .tab-content.active { display: block; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #eee;
+    }
   </style>
 </head>
 <body>
-  <div class="container" id="loginDiv">
-    <h2>Carbon Market Login</h2>
+  <script>
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxX1b5o5PuORMiIZGpf-emhCxuyZqPDf0lr4VKeJNrCvsBz6W7W_4nN25CC40OeBdc-SA/exec';
+  </script>
+
+  <div class="container" id="loginScreen">
+    <h2>Login</h2>
     <label>Username:</label>
-    <input type="text" id="username" required>
+    <input type="text" id="username">
     <label>Password:</label>
-    <input type="password" id="password" required>
+    <input type="password" id="password">
     <button onclick="login()">Login</button>
-    <p id="loginStatus"></p>
+    <p id="loginMessage"></p>
   </div>
 
-  <div class="container hidden" id="formDiv">
-    <h2>Submit Your Trade</h2>
-    <p><strong>Team:</strong> <span id="team"></span></p>
-    <p><strong>Portfolio:</strong> <span id="portfolio"></span></p>
-    <p><strong>World:</strong> <span id="world"></span></p>
+  <div class="container" id="mainApp" style="display:none">
+    <h2>Carbon Credit Trading Platform</h2>
+    <div><strong>Team:</strong> <span id="userTeam"></span> | <strong>World:</strong> <span id="userWorld"></span> | <strong>Portfolio:</strong> <span id="userPortfolio"></span></div>
 
-    <form id="tradeForm">
-      <label for="buyCredits">Credits to Buy:</label>
-      <input type="number" id="buyCredits" min="0">
-      <label for="bidPrice">Bid Price ($):</label>
-      <input type="number" id="bidPrice" min="0" step="0.01">
+    <nav>
+      <button class="tablink active" onclick="switchTab('buyTab')">Buy Credits</button>
+      <button class="tablink" onclick="switchTab('sellTab')">Sell Credits</button>
+      <button class="tablink" onclick="switchTab('dealsTab')">Finalized Deals</button>
+    </nav>
 
-      <label for="sellCredits">Credits to Sell:</label>
-      <input type="number" id="sellCredits" min="0">
-      <label for="askPrice">Ask Price ($):</label>
-      <input type="number" id="askPrice" min="0" step="0.01">
+    <div id="buyTab" class="tab-content active">
+      <h3>Submit Buy Order</h3>
+      <label>Credits to Buy:</label>
+      <input type="number" id="buyQty">
+      <label>Bid Price ($/credit):</label>
+      <input type="number" id="buyPrice" step="0.01">
+      <label><input type="checkbox" id="buyNegotiate"> Open to negotiate</label>
+      <button onclick="submitBuy()">Submit Buy</button>
+      <div id="buyStatus"></div>
+      <h4>Previous Buy Orders</h4>
+      <table id="buyTable"></table>
+    </div>
 
-      <label><input type="checkbox" id="negotiate"> Open to negotiate</label>
-      <button type="submit">Submit Trade</button>
-    </form>
+    <div id="sellTab" class="tab-content">
+      <h3>Submit Sell Order</h3>
+      <label>Credits to Sell:</label>
+      <input type="number" id="sellQty">
+      <label>Ask Price ($/credit):</label>
+      <input type="number" id="sellPrice" step="0.01">
+      <label><input type="checkbox" id="sellNegotiate"> Open to negotiate</label>
+      <button onclick="submitSell()">Submit Sell</button>
+      <div id="sellStatus"></div>
+      <h4>Previous Sell Orders</h4>
+      <table id="sellTable"></table>
+    </div>
 
-    <p id="formStatus"></p>
+    <div id="dealsTab" class="tab-content">
+      <h3>Finalized Deals</h3>
+      <table id="dealsTable"></table>
+    </div>
   </div>
 
   <script>
-    let userData = null;
+    let user = null;
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+      document.querySelectorAll('.tablink').forEach(btn => btn.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      document.querySelector(`button[onclick="switchTab('${tabId}')"]`).classList.add('active');
+    }
 
     function login() {
-      const username = document.getElementById("username").value.trim();
-      const password = document.getElementById("password").value.trim();
-
-      fetch('YOUR_SCRIPT_URL_HERE?username=' + username + '&password=' + password)
+      const u = document.getElementById("username").value;
+      const p = document.getElementById("password").value;
+      fetch(`${SCRIPT_URL}?username=${u}&password=${p}`)
         .then(res => res.json())
         .then(data => {
-          if (data.status === 'success') {
-            userData = data.user;
-            document.getElementById("loginDiv").classList.add("hidden");
-            document.getElementById("formDiv").classList.remove("hidden");
-
-            document.getElementById("team").innerText = userData.team;
-            document.getElementById("portfolio").innerText = userData.portfolio;
-            document.getElementById("world").innerText = userData.World;
+          if (data.status === "success") {
+            user = data.user;
+            document.getElementById("loginScreen").style.display = "none";
+            document.getElementById("mainApp").style.display = "block";
+            document.getElementById("userTeam").textContent = user.team;
+            document.getElementById("userWorld").textContent = user.World;
+            document.getElementById("userPortfolio").textContent = user.portfolio;
+            loadTables();
           } else {
-            document.getElementById("loginStatus").innerText = "Invalid credentials.";
+            document.getElementById("loginMessage").textContent = "Invalid credentials.";
           }
-        })
-        .catch(() => {
-          document.getElementById("loginStatus").innerText = "Error connecting to server.";
         });
     }
 
-    document.getElementById("tradeForm").addEventListener("submit", function(e) {
-      e.preventDefault();
-      const body = {
-        team: userData.team,
-        portfolio: userData.portfolio,
-        world: userData.World,
-        creditsToBuy: parseInt(document.getElementById("buyCredits").value || 0),
-        bidPrice: parseFloat(document.getElementById("bidPrice").value || 0),
-        creditsToSell: parseInt(document.getElementById("sellCredits").value || 0),
-        askPrice: parseFloat(document.getElementById("askPrice").value || 0),
-        negotiate: document.getElementById("negotiate").checked
+    function submitBuy() {
+      const payload = {
+        team: user.team,
+        portfolio: user.portfolio,
+        world: user.World,
+        creditsToBuy: parseInt(document.getElementById("buyQty").value),
+        bidPrice: parseFloat(document.getElementById("buyPrice").value),
+        creditsToSell: 0,
+        askPrice: 0,
+        negotiate: document.getElementById("buyNegotiate").checked
       };
-
-      fetch('YOUR_SCRIPT_URL_HERE', {
+      fetch(SCRIPT_URL, {
         method: 'POST',
-        body: JSON.stringify(body)
-      })
-      .then(res => res.text())
-      .then(txt => {
-        document.getElementById("formStatus").innerText = txt;
-        document.getElementById("tradeForm").reset();
-      });
-    });
+        body: JSON.stringify(payload)
+      }).then(res => res.text())
+        .then(msg => {
+          document.getElementById("buyStatus").textContent = msg;
+          loadTables();
+        });
+    }
+
+    function submitSell() {
+      const payload = {
+        team: user.team,
+        portfolio: user.portfolio,
+        world: user.World,
+        creditsToBuy: 0,
+        bidPrice: 0,
+        creditsToSell: parseInt(document.getElementById("sellQty").value),
+        askPrice: parseFloat(document.getElementById("sellPrice").value),
+        negotiate: document.getElementById("sellNegotiate").checked
+      };
+      fetch(SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      }).then(res => res.text())
+        .then(msg => {
+          document.getElementById("sellStatus").textContent = msg;
+          loadTables();
+        });
+    }
+
+    function loadTables() {
+      fetch(`${SCRIPT_URL}?type=Bids`).then(r => r.json()).then(data => buildTable("buyTable", data));
+      fetch(`${SCRIPT_URL}?type=Asks`).then(r => r.json()).then(data => buildTable("sellTable", data));
+      fetch(`${SCRIPT_URL}?type=Trades`).then(r => r.json()).then(data => buildTable("dealsTable", data));
+    }
+
+    function buildTable(id, data) {
+      const table = document.getElementById(id);
+      table.innerHTML = '';
+      if (data.length === 0) return;
+      const thead = '<tr>' + data[0].map(h => `<th>${h}</th>`).join('') + '</tr>';
+      const rows = data.slice(1).map(r => '<tr>' + r.map(c => `<td>${c}</td>`).join('') + '</tr>').join('');
+      table.innerHTML = thead + rows;
+    }
   </script>
 </body>
 </html>
