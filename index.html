@@ -188,6 +188,8 @@
       }).then(res => res.text())
         .then(msg => {
           document.getElementById("buyStatus").textContent = msg;
+          alert("Buy order submitted successfully!
+" + msg);
           buyBtn.disabled = false;
           loadTables();
         }).catch(() => {
@@ -214,6 +216,8 @@
       }).then(res => res.text())
         .then(msg => {
           document.getElementById("sellStatus").textContent = msg;
+          alert("Sell order submitted successfully!
+" + msg);
           sellBtn.disabled = false;
           loadTables();
         }).catch(() => {
