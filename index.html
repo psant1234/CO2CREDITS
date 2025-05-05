@@ -81,7 +81,7 @@
 </head>
 <body>
   <script>
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxX1b5o5PuORMiIZGpf-emhCxuyZqPDf0lr4VKeJNrCvsBz6W7W_4nN25CC40OeBdc-SA/exec';
+    const SCRIPT_URL = 'YOUR_SCRIPT_URL_HERE';
   </script>
 
   <div class="container" id="loginScreen">
@@ -111,8 +111,9 @@
       <label>Bid Price ($/credit):</label>
       <input type="number" id="buyPrice" step="0.01">
       <label><input type="checkbox" id="buyNegotiate"> Open to negotiate</label>
-      <button onclick="submitBuy()">Submit Buy</button>
+      <button id="buyButton" onclick="submitBuy()">Submit Buy</button>
       <div id="buyStatus"></div>
+      <button onclick="loadTables()">🔄 Refresh Table</button>
       <h4>Previous Buy Orders</h4>
       <table id="buyTable"></table>
     </div>
@@ -124,14 +125,16 @@
       <label>Ask Price ($/credit):</label>
       <input type="number" id="sellPrice" step="0.01">
       <label><input type="checkbox" id="sellNegotiate"> Open to negotiate</label>
-      <button onclick="submitSell()">Submit Sell</button>
+      <button id="sellButton" onclick="submitSell()">Submit Sell</button>
       <div id="sellStatus"></div>
+      <button onclick="loadTables()">🔄 Refresh Table</button>
       <h4>Previous Sell Orders</h4>
       <table id="sellTable"></table>
     </div>
 
     <div id="dealsTab" class="tab-content">
       <h3>Finalized Deals</h3>
+      <button onclick="loadTables()">🔄 Refresh Table</button>
       <table id="dealsTable"></table>
     </div>
   </div>
@@ -167,6 +170,8 @@
     }
 
     function submitBuy() {
+      const buyBtn = document.getElementById("buyButton");
+      buyBtn.disabled = true;
       const payload = {
         team: user.team,
         portfolio: user.portfolio,
@@ -183,11 +188,16 @@
       }).then(res => res.text())
         .then(msg => {
           document.getElementById("buyStatus").textContent = msg;
+          buyBtn.disabled = false;
           loadTables();
+        }).catch(() => {
+          buyBtn.disabled = false;
         });
     }
 
     function submitSell() {
+      const sellBtn = document.getElementById("sellButton");
+      sellBtn.disabled = true;
       const payload = {
         team: user.team,
         portfolio: user.portfolio,
@@ -204,7 +214,10 @@
       }).then(res => res.text())
         .then(msg => {
           document.getElementById("sellStatus").textContent = msg;
+          sellBtn.disabled = false;
           loadTables();
+        }).catch(() => {
+          sellBtn.disabled = false;
         });
     }
 
