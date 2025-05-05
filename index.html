@@ -92,7 +92,7 @@
     fetch(`${SCRIPT_URL}?${params.toString()}`)
       .then(res => res.text())
       .then(msg => {
-        alert("Order deleted successfully!
+        alert("Order deleted successfully!\n
 " + msg);
         loadTables();
       });
@@ -203,7 +203,7 @@
       }).then(res => res.text())
         .then(msg => {
           document.getElementById("buyStatus").textContent = msg;
-          alert("Buy order submitted successfully!
+          alert("Buy order submitted successfully!\n
 " + msg);
           buyBtn.disabled = false;
           loadTables();
@@ -231,7 +231,7 @@
       }).then(res => res.text())
         .then(msg => {
           document.getElementById("sellStatus").textContent = msg;
-          alert("Sell order submitted successfully!
+          alert("Sell order submitted successfully!\n
 " + msg);
           sellBtn.disabled = false;
           loadTables();
@@ -268,9 +268,6 @@
   }).join('');
 
   table.innerHTML = thead + rows;
-}</th>`).join('') + '</tr>';
-      const rows = data.slice(1).map(r => '<tr>' + r.map(c => `<td>${c}</td>`).join('') + '</tr>').join('');
-      table.innerHTML = thead + rows;
     }
   </script>
 </body>
