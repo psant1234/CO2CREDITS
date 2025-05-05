@@ -82,79 +82,6 @@
 <body>
   <script>
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxX1b5o5PuORMiIZGpf-emhCxuyZqPDf0lr4VKeJNrCvsBz6W7W_4nN25CC40OeBdc-SA/exec';
-    function deleteOrder(type, orderId) {
-      const params = new URLSearchParams({
-        type: type,
-        orderId: orderId,
-        team: user.team,
-        world: user.World,
-        action: 'delete' // ✅ important addition
-      });
-      fetch(`${SCRIPT_URL}?${params.toString()}`)
-        .then(res => res.text())
-        .then(msg => {
-          alert("Order deleted successfully!\n" + msg);
-          loadTables();
-        });
-    }
-  </script>
-
-  <div class="container" id="loginScreen">
-    <h2>Login</h2>
-    <label>Username:</label>
-    <input type="text" id="username">
-    <label>Password:</label>
-    <input type="password" id="password">
-    <button onclick="login()">Login</button>
-    <p id="loginMessage"></p>
-  </div>
-
-  <div class="container" id="mainApp" style="display:none">
-    <h2>Carbon Credit Trading Platform</h2>
-    <div><strong>Team:</strong> <span id="userTeam"></span> | <strong>World:</strong> <span id="userWorld"></span> | <strong>Portfolio:</strong> <span id="userPortfolio"></span></div>
-
-    <nav>
-      <button class="tablink active" onclick="switchTab('buyTab')">Buy Credits</button>
-      <button class="tablink" onclick="switchTab('sellTab')">Sell Credits</button>
-      <button class="tablink" onclick="switchTab('dealsTab')">Finalized Deals</button>
-    </nav>
-
-    <div id="buyTab" class="tab-content active">
-      <h3>Submit Buy Order</h3>
-      <label>Credits to Buy:</label>
-      <input type="number" id="buyQty">
-      <label>Bid Price ($/credit):</label>
-      <input type="number" id="buyPrice" step="0.01">
-      <label><input type="checkbox" id="buyNegotiate"> Open to negotiate</label>
-      <button id="buyButton" onclick="submitBuy()">Submit Buy</button>
-      <div id="buyStatus"></div>
-      <button onclick="loadTables()">🔄 Refresh Table</button>
-      <h4>Previous Buy Orders</h4>
-      <table id="buyTable"></table>
-    </div>
-
-    <div id="sellTab" class="tab-content">
-      <h3>Submit Sell Order</h3>
-      <label>Credits to Sell:</label>
-      <input type="number" id="sellQty">
-      <label>Ask Price ($/credit):</label>
-      <input type="number" id="sellPrice" step="0.01">
-      <label><input type="checkbox" id="sellNegotiate"> Open to negotiate</label>
-      <button id="sellButton" onclick="submitSell()">Submit Sell</button>
-      <div id="sellStatus"></div>
-      <button onclick="loadTables()">🔄 Refresh Table</button>
-      <h4>Previous Sell Orders</h4>
-      <table id="sellTable"></table>
-    </div>
-
-    <div id="dealsTab" class="tab-content">
-      <h3>Finalized Deals</h3>
-      <button onclick="loadTables()">🔄 Refresh Table</button>
-      <table id="dealsTable"></table>
-    </div>
-  </div>
-
-  <script>
     let user = null;
 
     function switchTab(tabId) {
@@ -162,6 +89,22 @@
       document.querySelectorAll('.tablink').forEach(btn => btn.classList.remove('active'));
       document.getElementById(tabId).classList.add('active');
       document.querySelector(`button[onclick="switchTab('${tabId}')"]`).classList.add('active');
+    }
+
+    function deleteOrder(type, orderId) {
+      const params = new URLSearchParams({
+        type: type,
+        orderId: orderId,
+        team: user.team,
+        world: user.World,
+        action: 'delete'
+      });
+      fetch(`${SCRIPT_URL}?${params.toString()}`)
+        .then(res => res.text())
+        .then(msg => {
+          alert("Order deleted successfully!\n" + msg);
+          loadTables();
+        });
     }
 
     function login() {
@@ -255,7 +198,6 @@
       const worldIndex = headers.indexOf('World');
 
       const thead = '<tr>' + headers.map(h => `<th>${h}</th>`).join('') + '<th>Action</th></tr>';
-
       const rows = data.slice(1).map(row => {
         const rowHtml = row.map(cell => `<td>${cell}</td>`).join('');
         const canDelete = row[teamIndex] === user.team && row[worldIndex] === user.World;
@@ -268,5 +210,82 @@
       table.innerHTML = thead + rows;
     }
   </script>
+
+  <div class="container" id="loginScreen">
+    <h2>Login</h2>
+    <label>Username:</label>
+    <input type="text" id="username">
+    <label>Password:</label>
+    <input type="password" id="password">
+    <button onclick="login()">Login</button>
+    <p id="loginMessage"></p>
+  </div>
+
+  <div class="container" id="mainApp" style="display:none">
+    <h2>Carbon Credit Trading Platform</h2>
+    <div><strong>Team:</strong> <span id="userTeam"></span> | <strong>World:</strong> <span id="userWorld"></span> | <strong>Portfolio:</strong> <span id="userPortfolio"></span></div>
+
+    <nav>
+      <button class="tablink active" onclick="switchTab('buyTab')">Buy Credits</button>
+      <button class="tablink" onclick="switchTab('sellTab')">Sell Credits</button>
+      <button class="tablink" onclick="switchTab('dealsTab')">Finalized Deals</button>
+      <button class="tablink" onclick="switchTab('instructionsTab')">Instructions</button>
+    </nav>
+
+    <div id="buyTab" class="tab-content active">
+      <h3>Submit Buy Order</h3>
+      <label>Credits to Buy:</label>
+      <input type="number" id="buyQty">
+      <label>Bid Price ($/credit):</label>
+      <input type="number" id="buyPrice" step="0.01">
+      <label><input type="checkbox" id="buyNegotiate"> Open to negotiate</label>
+      <button id="buyButton" onclick="submitBuy()">Submit Buy</button>
+      <div id="buyStatus"></div>
+      <button onclick="loadTables()">🔄 Refresh Table</button>
+      <h4>Previous Buy Orders</h4>
+      <table id="buyTable"></table>
+    </div>
+
+    <div id="sellTab" class="tab-content">
+      <h3>Submit Sell Order</h3>
+      <label>Credits to Sell:</label>
+      <input type="number" id="sellQty">
+      <label>Ask Price ($/credit):</label>
+      <input type="number" id="sellPrice" step="0.01">
+      <label><input type="checkbox" id="sellNegotiate"> Open to negotiate</label>
+      <button id="sellButton" onclick="submitSell()">Submit Sell</button>
+      <div id="sellStatus"></div>
+      <button onclick="loadTables()">🔄 Refresh Table</button>
+      <h4>Previous Sell Orders</h4>
+      <table id="sellTable"></table>
+    </div>
+
+    <div id="dealsTab" class="tab-content">
+      <h3>Finalized Deals</h3>
+      <button onclick="loadTables()">🔄 Refresh Table</button>
+      <table id="dealsTable"></table>
+    </div>
+
+    <div id="instructionsTab" class="tab-content">
+      <h3>Instructions</h3>
+      <p><strong>1. Objective:</strong> Manage your energy portfolio using carbon credit trading. Buy when in shortage, sell when in excess, and stay compliant while maximizing value.</p>
+      <p><strong>2. Navigation Tabs:</strong></p>
+      <ul>
+        <li><strong>Buy Credits</strong>: Submit bids to purchase carbon credits.</li>
+        <li><strong>Sell Credits</strong>: Submit offers to sell carbon credits.</li>
+        <li><strong>Finalized Deals</strong>: View completed trades.</li>
+        <li><strong>Instructions</strong>: Read these platform usage guidelines.</li>
+      </ul>
+      <p><strong>3. Trading Rules:</strong></p>
+      <ul>
+        <li>A trade happens if a buy bid price is greater than or equal to a sell ask price.</li>
+        <li>Partial trades are allowed (if quantity does not fully match).</li>
+        <li>Unmatched amounts are listed in the active order tables.</li>
+      </ul>
+      <p><strong>4. Submitting Orders:</strong> Fill in quantity and price, optionally check “Open to negotiate”, and submit your buy or sell order. You will receive confirmation.</p>
+      <p><strong>5. Deleting Orders:</strong> You can only delete your team’s orders (same team and world) using the 🗑️ icon.</p>
+      <p><strong>6. Refreshing Data:</strong> Use the refresh buttons on each tab to view the most up-to-date order and trade activity.</p>
+    </div>
+  </div>
 </body>
 </html>
