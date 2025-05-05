@@ -226,13 +226,34 @@
     <div><strong>Team:</strong> <span id="userTeam"></span> | <strong>World:</strong> <span id="userWorld"></span> | <strong>Portfolio:</strong> <span id="userPortfolio"></span></div>
 
     <nav>
-      <button class="tablink active" onclick="switchTab('buyTab')">Buy Credits</button>
+      <button class="tablink active" onclick="switchTab('instructionsTab')">Instructions</button>
+      <button class="tablink" onclick="switchTab('buyTab')">Buy Credits</button>
       <button class="tablink" onclick="switchTab('sellTab')">Sell Credits</button>
       <button class="tablink" onclick="switchTab('dealsTab')">Finalized Deals</button>
-      <button class="tablink" onclick="switchTab('instructionsTab')">Instructions</button>
     </nav>
 
-    <div id="buyTab" class="tab-content active">
+    <div id="instructionsTab" class="tab-content active">
+      <h3>Instructions</h3>
+      <p><strong>1. Objective:</strong> Manage your energy portfolio using carbon credit trading. Buy when in shortage, sell when in excess, and stay compliant while maximizing value.</p>
+      <p><strong>2. Navigation Tabs:</strong></p>
+      <ul>
+        <li><strong>Buy Credits</strong>: Submit bids to purchase carbon credits.</li>
+        <li><strong>Sell Credits</strong>: Submit offers to sell carbon credits.</li>
+        <li><strong>Finalized Deals</strong>: View completed trades.</li>
+        <li><strong>Instructions</strong>: Read these platform usage guidelines.</li>
+      </ul>
+      <p><strong>3. Trading Rules:</strong></p>
+      <ul>
+        <li>A trade happens if a buy bid price is greater than or equal to a sell ask price.</li>
+        <li>Partial trades are allowed (if quantity does not fully match).</li>
+        <li>Unmatched amounts are listed in the active order tables.</li>
+      </ul>
+      <p><strong>4. Submitting Orders:</strong> Fill in quantity and price, optionally check “Open to negotiate”, and submit your buy or sell order. You will receive confirmation.</p>
+      <p><strong>5. Deleting Orders:</strong> You can only delete your team’s orders (same team and world) using the 🗑️ icon.</p>
+      <p><strong>6. Refreshing Data:</strong> Use the refresh buttons on each tab to view the most up-to-date order and trade activity.</p>
+    </div>
+
+    <div id="buyTab" class="tab-content">
       <h3>Submit Buy Order</h3>
       <label>Credits to Buy:</label>
       <input type="number" id="buyQty">
@@ -264,27 +285,6 @@
       <h3>Finalized Deals</h3>
       <button onclick="loadTables()">🔄 Refresh Table</button>
       <table id="dealsTable"></table>
-    </div>
-
-    <div id="instructionsTab" class="tab-content">
-      <h3>Instructions</h3>
-      <p><strong>1. Objective:</strong> Manage your energy portfolio using carbon credit trading. Buy when in shortage, sell when in excess, and stay compliant while maximizing value.</p>
-      <p><strong>2. Navigation Tabs:</strong></p>
-      <ul>
-        <li><strong>Buy Credits</strong>: Submit bids to purchase carbon credits.</li>
-        <li><strong>Sell Credits</strong>: Submit offers to sell carbon credits.</li>
-        <li><strong>Finalized Deals</strong>: View completed trades.</li>
-        <li><strong>Instructions</strong>: Read these platform usage guidelines.</li>
-      </ul>
-      <p><strong>3. Trading Rules:</strong></p>
-      <ul>
-        <li>A trade happens if a buy bid price is greater than or equal to a sell ask price.</li>
-        <li>Partial trades are allowed (if quantity does not fully match).</li>
-        <li>Unmatched amounts are listed in the active order tables.</li>
-      </ul>
-      <p><strong>4. Submitting Orders:</strong> Fill in quantity and price, optionally check “Open to negotiate”, and submit your buy or sell order. You will receive confirmation.</p>
-      <p><strong>5. Deleting Orders:</strong> You can only delete your team’s orders (same team and world) using the 🗑️ icon.</p>
-      <p><strong>6. Refreshing Data:</strong> Use the refresh buttons on each tab to view the most up-to-date order and trade activity.</p>
     </div>
   </div>
 </body>
