@@ -1,62 +1,102 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Carbon Credit Trading</title>
+  <title>Carbon Trading Login</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    body { font-family: Arial, sans-serif; background: #f5f5f5; padding: 20px; }
-    .container { max-width: 700px; background: white; padding: 30px; margin: auto; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    body { font-family: Arial; background: #f5f5f5; padding: 20px; }
+    .container { max-width: 500px; margin: auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
     h2 { color: #8A1538; text-align: center; }
     label { display: block; margin-top: 15px; }
     input, select { width: 100%; padding: 8px; margin-top: 5px; }
-    button { margin-top: 20px; padding: 10px 20px; background-color: #8A1538; color: white; border: none; border-radius: 4px; cursor: pointer; }
+    button { margin-top: 20px; padding: 10px; width: 100%; background-color: #8A1538; color: white; border: none; border-radius: 4px; cursor: pointer; }
+    .hidden { display: none; }
   </style>
 </head>
 <body>
-  <div class="container">
+  <div class="container" id="loginDiv">
+    <h2>Carbon Market Login</h2>
+    <label>Username:</label>
+    <input type="text" id="username" required>
+    <label>Password:</label>
+    <input type="password" id="password" required>
+    <button onclick="login()">Login</button>
+    <p id="loginStatus"></p>
+  </div>
+
+  <div class="container hidden" id="formDiv">
     <h2>Submit Your Trade</h2>
+    <p><strong>Team:</strong> <span id="team"></span></p>
+    <p><strong>Portfolio:</strong> <span id="portfolio"></span></p>
+    <p><strong>World:</strong> <span id="world"></span></p>
+
     <form id="tradeForm">
-      <label for="team">Team Name:</label>
-      <input type="text" id="team" required>
-
-      <label for="creditsToBuy">Credits to Buy:</label>
-      <input type="number" id="creditsToBuy" min="0">
-
-      <label for="bidPrice">Bid Price ($/credit):</label>
+      <label for="buyCredits">Credits to Buy:</label>
+      <input type="number" id="buyCredits" min="0">
+      <label for="bidPrice">Bid Price ($):</label>
       <input type="number" id="bidPrice" min="0" step="0.01">
 
-      <label for="creditsToSell">Credits to Sell:</label>
-      <input type="number" id="creditsToSell" min="0">
-
-      <label for="askPrice">Ask Price ($/credit):</label>
+      <label for="sellCredits">Credits to Sell:</label>
+      <input type="number" id="sellCredits" min="0">
+      <label for="askPrice">Ask Price ($):</label>
       <input type="number" id="askPrice" min="0" step="0.01">
 
       <label><input type="checkbox" id="negotiate"> Open to negotiate</label>
-
-      <button type="submit">Submit</button>
+      <button type="submit">Submit Trade</button>
     </form>
-    <p id="response"></p>
+
+    <p id="formStatus"></p>
   </div>
 
   <script>
+    let userData = null;
+
+    function login() {
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value.trim();
+
+      fetch('YOUR_SCRIPT_URL_HERE?username=' + username + '&password=' + password)
+        .then(res => res.json())
+        .then(data => {
+          if (data.status === 'success') {
+            userData = data.user;
+            document.getElementById("loginDiv").classList.add("hidden");
+            document.getElementById("formDiv").classList.remove("hidden");
+
+            document.getElementById("team").innerText = userData.team;
+            document.getElementById("portfolio").innerText = userData.portfolio;
+            document.getElementById("world").innerText = userData.World;
+          } else {
+            document.getElementById("loginStatus").innerText = "Invalid credentials.";
+          }
+        })
+        .catch(() => {
+          document.getElementById("loginStatus").innerText = "Error connecting to server.";
+        });
+    }
+
     document.getElementById("tradeForm").addEventListener("submit", function(e) {
       e.preventDefault();
-      const data = {
-        team: document.getElementById("team").value,
-        creditsToBuy: parseInt(document.getElementById("creditsToBuy").value || 0),
+      const body = {
+        team: userData.team,
+        portfolio: userData.portfolio,
+        world: userData.World,
+        creditsToBuy: parseInt(document.getElementById("buyCredits").value || 0),
         bidPrice: parseFloat(document.getElementById("bidPrice").value || 0),
-        creditsToSell: parseInt(document.getElementById("creditsToSell").value || 0),
+        creditsToSell: parseInt(document.getElementById("sellCredits").value || 0),
         askPrice: parseFloat(document.getElementById("askPrice").value || 0),
         negotiate: document.getElementById("negotiate").checked
       };
 
-      fetch('YOUR_DEPLOYED_SCRIPT_URL', {
+      fetch('YOUR_SCRIPT_URL_HERE', {
         method: 'POST',
-        body: JSON.stringify(data)
+        body: JSON.stringify(body)
       })
       .then(res => res.text())
-      .then(txt => document.getElementById("response").innerText = txt)
-      .catch(err => console.error('Error:', err));
+      .then(txt => {
+        document.getElementById("formStatus").innerText = txt;
+        document.getElementById("tradeForm").reset();
+      });
     });
   </script>
 </body>
