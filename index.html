@@ -87,7 +87,8 @@
         type: type,
         orderId: orderId,
         team: user.team,
-        world: user.World
+        world: user.World,
+        action: 'delete' // ✅ important addition
       });
       fetch(`${SCRIPT_URL}?${params.toString()}`)
         .then(res => res.text())
