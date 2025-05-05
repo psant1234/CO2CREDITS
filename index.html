@@ -81,23 +81,22 @@
 </head>
 <body>
   <script>
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxX1b5o5PuORMiIZGpf-emhCxuyZqPDf0lr4VKeJNrCvsBz6W7W_4nN25CC40OeBdc-SA/exec';
+    const SCRIPT_URL = 'YOUR_SCRIPT_URL_HERE';
     function deleteOrder(type, orderId) {
-    const params = new URLSearchParams({
-      type: type,
-      orderId: orderId,
-      team: user.team,
-      world: user.World
-    });
-    fetch(`${SCRIPT_URL}?${params.toString()}`)
-      .then(res => res.text())
-      .then(msg => {
-        alert("Order deleted successfully!\n
-" + msg);
-        loadTables();
+      const params = new URLSearchParams({
+        type: type,
+        orderId: orderId,
+        team: user.team,
+        world: user.World
       });
-  }
-</script>
+      fetch(`${SCRIPT_URL}?${params.toString()}`)
+        .then(res => res.text())
+        .then(msg => {
+          alert("Order deleted successfully!\n" + msg);
+          loadTables();
+        });
+    }
+  </script>
 
   <div class="container" id="loginScreen">
     <h2>Login</h2>
@@ -203,8 +202,7 @@
       }).then(res => res.text())
         .then(msg => {
           document.getElementById("buyStatus").textContent = msg;
-          alert("Buy order submitted successfully!\n
-" + msg);
+          alert("Buy order submitted successfully!\n" + msg);
           buyBtn.disabled = false;
           loadTables();
         }).catch(() => {
@@ -231,8 +229,7 @@
       }).then(res => res.text())
         .then(msg => {
           document.getElementById("sellStatus").textContent = msg;
-          alert("Sell order submitted successfully!\n
-" + msg);
+          alert("Sell order submitted successfully!\n" + msg);
           sellBtn.disabled = false;
           loadTables();
         }).catch(() => {
@@ -247,27 +244,27 @@
     }
 
     function buildTable(id, data) {
-  const table = document.getElementById(id);
-  table.innerHTML = '';
-  if (data.length === 0) return;
+      const table = document.getElementById(id);
+      table.innerHTML = '';
+      if (data.length === 0) return;
 
-  const headers = data[0];
-  const orderIdIndex = headers.indexOf('Order ID');
-  const teamIndex = headers.indexOf('Team');
-  const worldIndex = headers.indexOf('World');
+      const headers = data[0];
+      const orderIdIndex = headers.indexOf('Order ID');
+      const teamIndex = headers.indexOf('Team');
+      const worldIndex = headers.indexOf('World');
 
-  const thead = '<tr>' + headers.map(h => `<th>${h}</th>`).join('') + '<th>Action</th></tr>';
+      const thead = '<tr>' + headers.map(h => `<th>${h}</th>`).join('') + '<th>Action</th></tr>';
 
-  const rows = data.slice(1).map(row => {
-    const rowHtml = row.map(cell => `<td>${cell}</td>`).join('');
-    const canDelete = row[teamIndex] === user.team && row[worldIndex] === user.World;
-    const action = (canDelete && orderIdIndex !== -1)
-      ? `<td><button onclick="deleteOrder('${id === 'buyTable' ? 'Bids' : 'Asks'}', '${row[orderIdIndex]}')">🗑️</button></td>`
-      : '<td></td>';
-    return `<tr>${rowHtml}${action}</tr>`;
-  }).join('');
+      const rows = data.slice(1).map(row => {
+        const rowHtml = row.map(cell => `<td>${cell}</td>`).join('');
+        const canDelete = row[teamIndex] === user.team && row[worldIndex] === user.World;
+        const action = (canDelete && orderIdIndex !== -1)
+          ? `<td><button onclick="deleteOrder('${id === 'buyTable' ? 'Bids' : 'Asks'}', '${row[orderIdIndex]}')">🗑️</button></td>`
+          : '<td></td>';
+        return `<tr>${rowHtml}${action}</tr>`;
+      }).join('');
 
-  table.innerHTML = thead + rows;
+      table.innerHTML = thead + rows;
     }
   </script>
 </body>
